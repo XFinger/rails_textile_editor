@@ -1,0 +1,140 @@
+h2{color:green;}. Ruby on Rails Textile Editor
+
+p. I needed a lightweight textile markup editor for creating readme.textile docs for GitHub. I found a few resources online but in the end I just decided to roll my own. This tutorial will show you how to create your own textile editor with the *RedCloth* gem and *Textile-editor-helper*. You can give your website users the ability to safely create rich text markup or just use it to create, edit and manage your own textile documents. I used this editor to create this readme.
+
+p. This tutorial uses Ryan Bates' "nifty-generators":https://github.com/ryanb/nifty-generators . It's a _collection of useful Rails generator scripts for scaffolding, layout files, authentication, and more_  all packaged in an easy to use gem.  I recommend that you check it out.
+To install:
+
+bq{background:#ffffae;}. gem install nifty-generators
+
+h4{color:blue;}. Get Started
+
+p. Install and configure the RedCloth gem
+
+bq{background:#ffffae;}. gem install RedCloth (make sure to use CamelCase or everything explodes!)
+
+p. Add to *config/environment.rb*
+
+bq{background:#ffffae;}. config.gem "RedCloth"
+
+p. The textile-editor-plugin uses prototype, so make sure it's linked in the head section or your layout file. It also works with JQuery, for more information on textile-editor-plugin with JQuery see the creators "website.":http://slatecms.wvu.edu/open_source/textile_editor_helper
+
+bq{background:#ffffae;}. <%= javascript_include_tag :defaults %>
+
+p. Install the textile-editor-plugin
+
+bq{background:#ffffae;}. script/plugin install http://svn.webtest.wvu.edu/repos/rails/plugins/textile_editor_helper/
+rake textile_editor_helper:install
+
+p. Generate a scaffold for the document model
+
+bq{background:#ffffae;}. script/generate nifty_scaffold Document title:string doc:text 
+
+p. Rake your migration
+
+bq{background:#ffffae;}. rake db:migrate 
+
+h4{color:blue;}. View Templates
+
+*index.html.erb*
+
+pre{background:#ffffae;}.  <% for document in @documents %>
+   <b> <%=h document.title %> </b>
+   <p><%= RedCloth.new(document.doc).to_html %> </p>
+   <p>
+   <%= link_to "Show", document %> |  
+   <%= link_to "Edit", edit_document_path(document) %> |  
+   <%= link_to "Destroy", document, :confirm => 'Are you sure?', :method => :delete %> |  
+   </p>
+   <hr>
+<% end %>
+<p><%= link_to "New Document", new_document_path %></p>          
+
+*new.html.erb*
+
+pre{background:#ffffae;}. <%= render :partial => 'form' %>
+<p><%= link_to "Back to List", documents_path %></p>
+
+*_form.html.erb*
+ 
+pre{background:#ffffae;}. <% form_for @document do |f| %> 
+   <%= f.error_messages %> 
+   <p>
+   <%= f.label :title %> 
+   <br /> 
+   <%= f.text_field :title %> 
+   </p> 
+   <p><%= textile_editor 'document', 'doc' %></p> 
+   <%= textile_editor_initialize -%>
+   <p><%= f.submit %></p>
+<% end %>
+
+*show.html.erb* -- I moved this to a partial so it could be used on the edit page.
+
+pre{background:#ffffae;}. <%= render :partial => 'show'%>
+<p>
+<%= link_to "Edit", edit_document_path(@document) %> |
+<%= link_to "Destroy", @document, :confirm => 'Are you sure?', :method => :delete %> |
+<%= link_to "View All", documents_path %>
+</p>
+  
+*_show.html.erb* -- the partial
+
+pre{background:#ffffae;}. <h3><%=h @document.title %></h3>
+<%= RedCloth.new(@document.doc).to_html %>
+
+*edit.html.erb*
+
+pre{background:#ffffae;}. <%= render :partial => 'form' %>
+<hr>
+<%= render :partial => 'show'%>
+<hr>
+<p>
+<%= link_to "Show", @document %> |
+<%= link_to "View All", documents_path %> |
+</p>
+
+p. Add a download link to download the document
+
+*edit.html.erb* and/or *show.html.erb*
+
+pre{background:#ffffae;}. <%= link_to "Download "+@document.title, :action => :download, :id => @document.id %>
+
+p. Add this method to your controller *documents_controller.rb*
+
+pre{background:#ffffae;}. def download 
+   document = Document.find(params[:id]) 
+   @doc = document.doc
+   @title = document.title.to_s
+   file =  (@title+".textile")
+   File.open(file, "w+"){ |f| f << @doc }
+   send_file(file, :type => "text/textile; charset=utf-8")
+ end
+
+p. Change the routing in *documents_controller.rb* for both actions *create* and *update* with:
+
+pre{background:#ffffae;}. render :action => "edit"
+
+p. This will redirect to edit (which includes the show partial) after the document creation and after editing.
+
+p. Fire up your server and test everything out.
+
+h4{color:blue;}. Relevant Links
+
+bq. "RedCloth":http://redcloth.org/
+"RedCloth on Github":https://github.com/jgarber/redcloth/wiki
+"Textile-editor-helper":http://slatecms.wvu.edu/open_source/textile_editor_helper
+"Nifty-Generators on Github":https://github.com/ryanb/nifty-generators 
+"Textile":http://textile.thresholdstate.com/
+
+
+
+
+
+
+
+
+
+
+
+

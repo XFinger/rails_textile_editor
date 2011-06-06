@@ -1,0 +1,3 @@
+<h3><%=h @document.title %></h3>
+ <%= RedCloth.new(@document.doc).to_html %>
+

@@ -1,0 +1,19 @@
+ 
+
+
+ 
+ 
+<% for document in @documents %>
+<b> <%=h document.title %> </b>
+ 
+ <p><%= RedCloth.new(document.doc).to_html %> </p>
+ <p>
+ <%= link_to "Show", document %> |  
+ <%= link_to "Edit", edit_document_path(document) %> |  
+ <%= link_to "Destroy", document, :confirm => 'Are you sure?', :method => :delete %> |  
+ </p>
+ <hr>
+  <% end %>
+ 
+
+<p><%= link_to "New Document", new_document_path %></p>

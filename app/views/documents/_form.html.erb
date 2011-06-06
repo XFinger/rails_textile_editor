@@ -1,0 +1,12 @@
+<% form_for @document do |f| %>
+  <%= f.error_messages %>
+  <p>
+    <%= f.label :title %><br />
+    <%= f.text_field :title %>
+  </p>
+  <p> 
+    <%= textile_editor 'document', 'doc' -%>
+  </p>
+  <%= textile_editor_initialize -%>
+  <p><%= f.submit %></p>
+<% end %>

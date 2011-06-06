@@ -1,0 +1,12 @@
+ 
+
+<%= render :partial => 'form' %>
+<hr>
+<%= render :partial => 'show'%>
+<hr>
+<p>
+  <%= link_to "Show", @document %> |
+  <%= link_to "View All", documents_path %>| 
+  <%= link_to "Download "+@document.title ,:action => :download, :id => @document.id %> 
+</p>
+  
