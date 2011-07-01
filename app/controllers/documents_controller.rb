@@ -1,16 +1,21 @@
 class DocumentsController < ApplicationController
   
-  
-  def download 
+   def download 
     document = Document.find(params[:id])
     @doc = document.doc
     @title = document.title.to_s
-    file =  (@title+".textile")
-    File.open(file, "w+"){ |f| f << @doc }
-    send_file(file, :type => "text/textile; charset=utf-8")
-  end
+    file_name =  (@title+".textile")
+    send_data(@doc, :filename => file_name, :type => "text/textile")
+   end
   
-  
+  def download_html
+    document = Document.find(params[:id])
+    @doc = RedCloth.new(document.doc).to_html
+    @title = document.title.to_s
+    file_name =  (@title+".html")
+    send_data(@doc, :filename => file_name, :type => "text/html")
+  end 
+ 
   def index
     @documents = Document.all
   end

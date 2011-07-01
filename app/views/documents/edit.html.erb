@@ -7,6 +7,7 @@
 <p>
   <%= link_to "Show", @document %> |
   <%= link_to "View All", documents_path %>| 
-  <%= link_to "Download "+@document.title ,:action => :download, :id => @document.id %> 
+  <%= link_to "Download "+@document.title+".textile " ,:action => :download, :id => @document.id %> |  
+  <%= link_to "Download "+@document.title+".html" ,:action => :download_html, :id => @document.id %> 
 </p>
   
